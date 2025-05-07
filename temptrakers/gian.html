@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Temp Tracker</title>
+    <style>
+        body {
+            background: #000;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        .weather-box {
+            background: linear-gradient(to bottom right, #4facfe, #00f2fe);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 300px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .search {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .search input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px 0 0 10px;
+            outline: none;
+        }
+        
+        .search button {
+            padding: 10px;
+            background: white;
+            border: none;
+            border-radius: 0 10px 10px 0;
+            cursor: pointer;
+        }
+        
+        .icon {
+            width: 60px;
+            margin: 10px auto;
+        }
+        
+        .info {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .info img {
+            width: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="weather-box">
+        <div class="search">
+            <input type="text" id="cityInput" placeholder="huancayo" />
+            <button onclick="buscarCiudad()">🔍</button>
+        </div>
+
+        <div id="climaEstado">Clima actual</div>
+        <img src="https://cdn-icons-png.flaticon.com/512/1163/1163624.png" alt="clima" class="icon" />
+        <h1 id="temperatura">--°C</h1>
+        <h2 id="ciudad">--</h2>
+
+        <div class="info">
+            <div>
+                <img src="https://cdn-icons-png.flaticon.com/512/728/728093.png" alt="humedad" />
+                <span id="humedad">--%</span><br><small>Humedad</small>
+            </div>
+            <div>
+                <img src="https://cdn-icons-png.flaticon.com/512/553/553416.png" alt="viento" />
+                <span id="viento">-- km/h</span><br><small>Viento</small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "44b82555b1ba07d3d8288c24d6e72206"; // <-- reemplaza aquí con tu API key real
+
+        async function buscarCiudad() {
+            const ciudad = document.getElementById("cityInput").value;
+
+            if (!ciudad) {
+                alert("Por favor ingresa una ciudad");
+                return;
+            }
+
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${apiKey}&units=metric&lang=es`;
+
+            try {
+                const respuesta = await fetch(url);
+                const datos = await respuesta.json();
+
+                if (datos.cod !== 200) {
+                    alert("Ciudad no encontrada");
+                    return;
+                }
+
+                document.getElementById("ciudad").textContent = datos.name;
+                document.getElementById("temperatura").textContent = `${Math.round(datos.main.temp)}°C`;
+                document.getElementById("climaEstado").textContent = datos.weather[0].description;
+                document.getElementById("humedad").textContent = `${datos.main.humidity}%`;
+                document.getElementById("viento").textContent = `${datos.wind.speed} km/h`;
+
+            } catch (error) {
+                console.error("Error al obtener datos del clima:", error);
+                alert("Ocurrió un error al conectar con el servicio.");
+            }
+        }
+    </script>
+</body>
+
+</html>
